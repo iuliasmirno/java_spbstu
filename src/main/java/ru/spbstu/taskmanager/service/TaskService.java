@@ -7,5 +7,5 @@ public interface TaskService {
     Task createTask(String title);
     List<Task> getAllTasks();
     List<Task> getPendingTasks();
-    void deleteTask(String id);
+    boolean deleteTask(String id);
 }

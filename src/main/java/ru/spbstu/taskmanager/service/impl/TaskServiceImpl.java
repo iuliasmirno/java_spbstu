@@ -1,11 +1,13 @@
 package ru.spbstu.taskmanager.service.impl;
 
+import org.springframework.stereotype.Service;
 import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.TaskRepository;
 import ru.spbstu.taskmanager.service.TaskService;
 
 import java.util.List;
 
+@Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository repository;
 
@@ -33,7 +35,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTask(String id) {
-        repository.markDeleted(id);
+    public boolean deleteTask(String id) {
+        return repository.markDeleted(id);
     }
 }

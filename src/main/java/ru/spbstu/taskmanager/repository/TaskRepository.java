@@ -6,5 +6,5 @@ import java.util.List;
 public interface TaskRepository {
     Task save(Task task);
     List<Task> findAll();
-    void markDeleted(String id);
+    boolean markDeleted(String id);
 }

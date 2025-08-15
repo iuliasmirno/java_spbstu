@@ -1,5 +1,6 @@
 package ru.spbstu.taskmanager.repository.impl;
 
+import org.springframework.stereotype.Repository;
 import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.TaskRepository;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Repository
 public class InMemoryTaskRepository implements TaskRepository {
     private final Map<String, Task> storage = new ConcurrentHashMap<>();
 
@@ -23,10 +25,12 @@ public class InMemoryTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void markDeleted(String id) {
+    public boolean markDeleted(String id) {
         Task task = storage.get(id);
         if (task != null) {
             task.setDeleted(true);
+            return true;
         }
+        return false;
     }
 }
