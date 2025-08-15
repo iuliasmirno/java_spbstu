@@ -20,14 +20,16 @@ public class InMemoryTaskRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> findAll() {
-        return new ArrayList<>(storage.values());
+    public List<Task> findAllByUser(String userId) {
+        return storage.values().stream()
+                .filter(task -> task.getUserId().equals(userId))
+                .toList();
     }
 
     @Override
-    public boolean markDeleted(String id) {
+    public boolean markDeleted(String userId, String id) {
         Task task = storage.get(id);
-        if (task != null) {
+        if (task != null && task.getUserId().equals(userId)) {
             task.setDeleted(true);
             return true;
         }

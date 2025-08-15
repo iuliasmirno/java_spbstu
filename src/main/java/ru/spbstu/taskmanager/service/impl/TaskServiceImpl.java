@@ -16,26 +16,26 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task createTask(String title) {
-        return repository.save(new Task(title));
+    public Task createTask(String userId, String title) {
+        return repository.save(new Task(userId, title));
     }
 
     @Override
-    public List<Task> getAllTasks() {
-        return repository.findAll().stream()
+    public List<Task> getAllTasks(String userId) {
+        return repository.findAllByUser(userId).stream()
                 .filter(t -> !t.isDeleted())
                 .toList();
     }
 
     @Override
-    public List<Task> getPendingTasks() {
-        return repository.findAll().stream()
+    public List<Task> getPendingTasks(String userId) {
+        return repository.findAllByUser(userId).stream()
                 .filter(t -> !t.isDeleted() && !t.isCompleted())
                 .toList();
     }
 
     @Override
-    public boolean deleteTask(String id) {
-        return repository.markDeleted(id);
+    public boolean deleteTask(String userId, String id) {
+        return repository.markDeleted(userId, id);
     }
 }
