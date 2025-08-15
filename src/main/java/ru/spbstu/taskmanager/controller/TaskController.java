@@ -1,0 +1,52 @@
+package ru.spbstu.taskmanager.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ru.spbstu.taskmanager.model.Task;
+import ru.spbstu.taskmanager.service.TaskService;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/users/{userId}/tasks")
+public class TaskController {
+    private final TaskService service;
+
+    public TaskController(TaskService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Task>> getAllTasks(@PathVariable String userId) {
+        List<Task> tasks = service.getAllTasks(userId);
+        if (tasks.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<Task>> getPendingTasks(@PathVariable String userId) {
+        List<Task> pendingTasks = service.getPendingTasks(userId);
+        if (pendingTasks.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(pendingTasks);
+    }
+
+    @PostMapping
+    public ResponseEntity<Task> createTask(@PathVariable String userId, @RequestBody String title) {
+        Task task = service.createTask(userId, title);
+        return ResponseEntity.created(URI.create(task.getId())).body(task);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable String userId, @PathVariable String id) {
+        if (!service.deleteTask(userId, id)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
+    }
+}
