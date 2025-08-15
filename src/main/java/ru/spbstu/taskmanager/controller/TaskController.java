@@ -3,6 +3,7 @@ package ru.spbstu.taskmanager.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.spbstu.taskmanager.dto.CreateTaskRequest;
 import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.service.TaskService;
 
@@ -37,8 +38,9 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@PathVariable String userId, @RequestBody String title) {
-        Task task = service.createTask(userId, title);
+    public ResponseEntity<Task> createTask(@PathVariable String userId,
+                                           @RequestBody CreateTaskRequest request) {
+        Task task = service.createTask(userId, request.title(), request.targetDate());
         return ResponseEntity.created(URI.create(task.getId())).body(task);
     }
 

@@ -5,6 +5,7 @@ import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.TaskRepository;
 import ru.spbstu.taskmanager.service.TaskService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -16,8 +17,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task createTask(String userId, String title) {
-        return repository.save(new Task(userId, title));
+    public Task createTask(String userId, String title, LocalDate targetDate) {
+        return repository.save(new Task(userId, title, targetDate));
     }
 
     @Override
