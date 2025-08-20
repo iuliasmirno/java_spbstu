@@ -1,13 +1,11 @@
 package ru.spbstu.taskmanager.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.spbstu.taskmanager.dto.CreateTaskRequest;
 import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.service.NotificationService;
 import ru.spbstu.taskmanager.service.TaskService;
-import ru.spbstu.taskmanager.service.UserService;
 
 import java.net.URI;
 import java.util.List;
