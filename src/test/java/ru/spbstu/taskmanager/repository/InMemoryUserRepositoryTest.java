@@ -19,7 +19,7 @@ class InMemoryUserRepositoryTest {
     }
 
     @Test
-    void save_shouldStoreUser() {
+    void saveShouldStoreUser() {
         User user = new User("username");
         repository.save(user);
 
@@ -30,13 +30,13 @@ class InMemoryUserRepositoryTest {
     }
 
     @Test
-    void findByUsername_shouldReturnNullIfNotExists() {
+    void findByUsernameShouldReturnNullIfNotExists() {
         User result = repository.findByUsername("ghost");
         assertNull(result);
     }
 
     @Test
-    void findAll_shouldReturnAllUsers() {
+    void findAllShouldReturnAllUsers() {
         repository.save(new User("username"));
         repository.save(new User("username"));
 

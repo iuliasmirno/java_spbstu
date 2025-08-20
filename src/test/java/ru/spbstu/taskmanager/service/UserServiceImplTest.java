@@ -26,7 +26,7 @@ class UserServiceImplTest {
     private UserServiceImpl service;
 
     @Test
-    void registerUser_shouldSave() {
+    void registerUserShouldSave() {
         User user = new User("username");
         when(repository.save(any(User.class))).thenReturn(user);
 
@@ -37,7 +37,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void login_shouldReturnUser() {
+    void loginShouldReturnUser() {
         User user = new User("username");
         when(repository.findByUsername("username")).thenReturn(user);
 

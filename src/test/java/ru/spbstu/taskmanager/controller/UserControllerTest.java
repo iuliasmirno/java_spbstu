@@ -25,7 +25,7 @@ class UserControllerTest {
     private UserService userService;
 
     @Test
-    void register_shouldReturnCreatedUser() throws Exception {
+    void registerShouldReturnCreatedUser() throws Exception {
         User user = new User("john");
         when(userService.register("john")).thenReturn(user);
 
@@ -38,7 +38,7 @@ class UserControllerTest {
     }
 
     @Test
-    void login_shouldReturnUserIfExists() throws Exception {
+    void loginShouldReturnUserIfExists() throws Exception {
         User user = new User("mary");
         when(userService.login("mary")).thenReturn(user);
 
@@ -49,7 +49,7 @@ class UserControllerTest {
     }
 
     @Test
-    void login_shouldReturnNotFoundIfUserDoesNotExist() throws Exception {
+    void loginShouldReturnNotFoundIfUserDoesNotExist() throws Exception {
         when(userService.login("ghost")).thenReturn(null);
 
         mockMvc.perform(get("/users/login")
@@ -58,7 +58,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getAllUsers_shouldReturnListOfUsers() throws Exception {
+    void getAllUsersShouldReturnListOfUsers() throws Exception {
         when(userService.getAllUsers()).thenReturn(List.of(new User("a"), new User("b")));
 
         mockMvc.perform(get("/users"))
