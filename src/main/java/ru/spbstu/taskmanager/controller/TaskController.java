@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.spbstu.taskmanager.dto.CreateTaskRequest;
 import ru.spbstu.taskmanager.model.Task;
+import ru.spbstu.taskmanager.service.NotificationService;
 import ru.spbstu.taskmanager.service.TaskService;
+import ru.spbstu.taskmanager.service.UserService;
 
 import java.net.URI;
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.List;
 @RequestMapping("/users/{userId}/tasks")
 public class TaskController {
     private final TaskService service;
+    private final NotificationService notificationService;
 
-    public TaskController(TaskService service) {
+    public TaskController(TaskService service, NotificationService notificationService) {
         this.service = service;
+        this.notificationService = notificationService;
     }
 
     @GetMapping
@@ -41,6 +45,7 @@ public class TaskController {
     public ResponseEntity<Task> createTask(@PathVariable String userId,
                                            @RequestBody CreateTaskRequest request) {
         Task task = service.createTask(userId, request.title(), request.targetDate());
+        notificationService.createNotification(userId, "New task created: " + request.title());
         return ResponseEntity.created(URI.create(task.getId())).body(task);
     }
 
