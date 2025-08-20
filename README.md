@@ -1,54 +1,26 @@
-# Step 1: Basic REST API with In-Memory Storage
+# README: Step 2 - Unit Testing
 
-## Overview
-This is the first step of our backend development task focused on creating a basic REST API using Java Spring framework. This initial stage involves setting up a Spring Boot project without any external databases, relying instead on in-memory storage mechanisms such as Lists or Maps.
+## Introduction
+Welcome to Step 2 of our backend development process! In this stage, we've focused on writing comprehensive unit tests for our application components using JUnit. These tests ensure that individual units of our code work properly when isolated from other parts of the system.
 
----
-
-
-## Project Setup
-
-### Tools Used
-- **Spring Boot** version 3.5.4 (generated via https://start.spring.io/)
-- **Build Tool**: chose Maven
-- **IDE**: IntelliJ IDEA
-
-### Initial Configuration
-Generate a base Spring Boot application including dependencies for Web, Test, and optionally Lombok.
-
----
-
-## Implementation Details
+## Test Coverage
+We've created test cases for the following core components of our application:
 
 ### Controllers
-#### TaskController
-- `/tasks`: GET endpoint returning all user tasks.
-- `/tasks/pending`: GET endpoint showing only pending tasks.
-- `/tasks`: POST endpoint allowing task creation.
-- `/tasks/{id}`: DELETE endpoint marking task as deleted (soft deletion logic implemented).
+- **NotificationControllerTest.java**
+- **TaskControllerTest.java**
+- **UserControllerTest.java**
 
-#### UserController
-- `/users/login`: Simulated login functionality identifying users by credentials.
-- `/users/register`: Endpoint handling user registrations.
-
-#### NotificationController
-- `/notifications`: GET endpoint listing all user's notifications.
-- `/notifications/pending`: GET endpoint displaying only unread notifications.
+These tests verify that our REST endpoints respond appropriately to different types of HTTP requests and return expected JSON responses with appropriate HTTP status codes.
 
 ### Services
-Each Controller interact with corresponding Service layer implementing business logic.
+- **NotificationServiceImplTest.java**
+- **TaskServiceImplTest.java**
+- **UserServiceImplTest.java**
+
+The service layer tests validate the correctness of our business logic, including task management, notification handling, and user-related operations.
 
 ### Repositories
-Repositories handle CRUD operations over in-memory collections (List/Map).
-
----
-
-## Data Structures
-Task entities include fields such as:
-- Creation Date
-- Target Completion Date
-- Status (Completed and deleted)
-
-User entity includes authentication details and associated tasks.
-Notification entity contains message content and read/unread state.
-
+- **InMemoryNotificationRepositoryTest.java**
+- **InMemoryTaskRepositoryTest.java**
+- **InMemoryUserRepositoryTest.java**
