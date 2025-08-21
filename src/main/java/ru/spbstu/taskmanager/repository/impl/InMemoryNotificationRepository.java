@@ -34,4 +34,10 @@ public class InMemoryNotificationRepository implements NotificationRepository {
                 .sorted(Comparator.comparing(Notification::getCreationDate))
                 .toList();
     }
+
+    @Override
+    public boolean removeAll() {
+        storage.clear();
+        return true;
+    }
 }

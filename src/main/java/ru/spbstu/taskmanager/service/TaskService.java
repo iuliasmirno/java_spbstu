@@ -10,4 +10,6 @@ public interface TaskService {
     List<Task> getAllTasks(String userId);
     List<Task> getPendingTasks(String userId);
     boolean deleteTask(String userId, String id);
+
+    void removeAllTasks();
 }

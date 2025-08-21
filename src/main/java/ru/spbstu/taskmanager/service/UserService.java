@@ -8,4 +8,6 @@ public interface UserService {
     User register(String username);
     User login(String username);
     List<User> getAllUsers();
+
+    void removeAllUsers();
 }
