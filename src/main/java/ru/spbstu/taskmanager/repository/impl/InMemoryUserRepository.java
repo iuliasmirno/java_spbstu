@@ -1,5 +1,6 @@
 package ru.spbstu.taskmanager.repository.impl;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import ru.spbstu.taskmanager.model.User;
 import ru.spbstu.taskmanager.repository.UserRepository;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@Profile("inmemory")
 public class InMemoryUserRepository implements UserRepository {
     private final Map<String, User> storage = new ConcurrentHashMap<>();
 
@@ -33,8 +35,7 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean removeAll() {
+    public void removeAll() {
         storage.clear();
-        return true;
     }
 }

@@ -1,13 +1,21 @@
 package ru.spbstu.taskmanager.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "notifications")
 public class Notification {
-    private final String id;
-    private final String userId;
-    private final String message;
-    private final LocalDateTime creationDate;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    private String userId;
+    private String message;
+    private LocalDateTime creationDate;
     private boolean read;
 
     public Notification(String userId, String message) {
@@ -18,10 +26,17 @@ public class Notification {
         this.read = false;
     }
 
+    public Notification() {
+
+    }
+
     public String getId() { return id; }
     public String getUserId() { return userId; }
     public String getMessage() { return message; }
     public LocalDateTime getCreationDate() { return creationDate; }
     public boolean isRead() { return read; }
     public void setRead(boolean read) { this.read = read; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public void setMessage(String message) { this.message = message; }
+    public void setCreationDate(LocalDateTime creationDate) { this.creationDate = creationDate; }
 }

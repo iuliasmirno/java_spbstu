@@ -24,19 +24,19 @@ class InMemoryTaskRepositoryTest {
         Task task = new Task("user1", "Test Task", LocalDate.now());
         repository.save(task);
 
-        List<Task> tasks = repository.findAllByUser("user1");
+        List<Task> tasks = repository.findByUserId("user1");
         assertEquals(1, tasks.size());
         assertEquals("Test Task", tasks.get(0).getTitle());
     }
 
     @Test
-    void findAllByUserShouldReturnOnlyThatUserTasks() {
+    void findByUserShouldReturnOnlyThatUserIdTasks() {
         Task t1 = new Task("user1", "Task1", LocalDate.now());
         Task t2 = new Task("user2", "Task2", LocalDate.now());
         repository.save(t1);
         repository.save(t2);
 
-        List<Task> tasks = repository.findAllByUser("user1");
+        List<Task> tasks = repository.findByUserId("user1");
 
         assertEquals(1, tasks.size());
         assertEquals("Task1", tasks.get(0).getTitle());
@@ -47,9 +47,8 @@ class InMemoryTaskRepositoryTest {
         Task task = new Task("user1", "Task", LocalDate.now());
         repository.save(task);
 
-        boolean result = repository.markDeleted("user1", task.getId());
+        repository.markDeleted("user1", task.getId());
 
-        assertTrue(result);
         assertTrue(task.isDeleted());
     }
 
@@ -58,9 +57,8 @@ class InMemoryTaskRepositoryTest {
         Task task = new Task("user1", "Task", LocalDate.now());
         repository.save(task);
 
-        boolean result = repository.markDeleted("user2", task.getId());
+        repository.markDeleted("user2", task.getId());
 
-        assertFalse(result);
         assertFalse(task.isDeleted());
     }
 }

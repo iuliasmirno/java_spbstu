@@ -1,5 +1,6 @@
 package ru.spbstu.taskmanager.repository.impl;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import ru.spbstu.taskmanager.model.Notification;
 import ru.spbstu.taskmanager.repository.NotificationRepository;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@Profile("inmemory")
 public class InMemoryNotificationRepository implements NotificationRepository {
     private final Map<String, Notification> storage = new ConcurrentHashMap<>();
 
@@ -20,7 +22,15 @@ public class InMemoryNotificationRepository implements NotificationRepository {
     }
 
     @Override
-    public List<Notification> findAllByUser(String userId) {
+    public <S extends Notification> Iterable<S> saveAll(Iterable<S> entities) {
+        for (S entity : entities) {
+            storage.put(entity.getId(), entity);
+        }
+        return entities;
+    }
+
+    @Override
+    public List<Notification> findAllByUserId(String userId) {
         return storage.values().stream()
                 .filter(n -> n.getUserId().equals(userId))
                 .sorted(Comparator.comparing(Notification::getCreationDate))
@@ -36,8 +46,7 @@ public class InMemoryNotificationRepository implements NotificationRepository {
     }
 
     @Override
-    public boolean removeAll() {
+    public void removeAll() {
         storage.clear();
-        return true;
     }
 }

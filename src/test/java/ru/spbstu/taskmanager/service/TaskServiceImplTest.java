@@ -44,7 +44,7 @@ public class TaskServiceImplTest {
         Task t1 = new Task("user1", "Task 1", LocalDate.now());
         Task t2 = new Task("user1", "Task 2", LocalDate.now());
         t2.setDeleted(true);
-        when(repository.findAllByUser("user1")).thenReturn(List.of(t1, t2));
+        when(repository.findByUserId("user1")).thenReturn(List.of(t1, t2));
 
         List<Task> result = service.getAllTasks("user1");
 

@@ -23,19 +23,19 @@ class InMemoryNotificationRepositoryTest {
         Notification n = new Notification("user1", "Hello!");
         repository.save(n);
 
-        List<Notification> all = repository.findAllByUser("user1");
+        List<Notification> all = repository.findAllByUserId("user1");
         assertEquals(1, all.size());
         assertEquals("Hello!", all.get(0).getMessage());
     }
 
     @Test
-    void findAllByUserShouldReturnSortedByDate() {
+    void findAllByUserShouldReturnSortedByDateId() {
         Notification n1 = new Notification("user1", "First");
         Notification n2 = new Notification("user1", "Second");
         repository.save(n2);
         repository.save(n1);
 
-        List<Notification> all = repository.findAllByUser("user1");
+        List<Notification> all = repository.findAllByUserId("user1");
 
         assertEquals("First", all.get(0).getMessage()); // потому что по дате
     }

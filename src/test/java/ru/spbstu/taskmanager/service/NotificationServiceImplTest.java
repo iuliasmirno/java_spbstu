@@ -42,7 +42,7 @@ class NotificationServiceImplTest {
     void getAllNotificationsShouldReturnAll() {
         Notification n1 = new Notification("user1", "Msg1");
         Notification n2 = new Notification("user1", "Msg2");
-        when(repository.findAllByUser("user1")).thenReturn(List.of(n1, n2));
+        when(repository.findAllByUserId("user1")).thenReturn(List.of(n1, n2));
 
         List<Notification> all = service.getAllNotifications("user1");
 
