@@ -8,4 +8,6 @@ public interface UserRepository {
     User save(User user);
     User findByUsername(String username);
     List<User> findAll();
+
+    boolean removeAll();
 }

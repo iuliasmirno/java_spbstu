@@ -40,4 +40,9 @@ public class NotificationServiceImpl implements NotificationService {
         repository.saveAll(pending);
         return pending;
     }
+
+    @Override
+    public void deleteAllNotifications() {
+        repository.removeAll();
+    }
 }

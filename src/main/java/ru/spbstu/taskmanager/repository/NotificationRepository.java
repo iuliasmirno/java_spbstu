@@ -9,4 +9,6 @@ public interface NotificationRepository {
     <S extends Notification> Iterable<S> saveAll(Iterable<S> entities);
     List<Notification> findAllByUserId(String userId);
     List<Notification> findPendingByUser(String userId);
+
+    boolean removeAll();
 }
