@@ -1,26 +1,53 @@
-# README: Step 2 - Unit Testing
+# Step 4: Add Docker Support
 
-## Introduction
-Welcome to Step 2 of our backend development process! In this stage, we've focused on writing comprehensive unit tests for our application components using JUnit. These tests ensure that individual units of our code work properly when isolated from other parts of the system.
+## Overview
+This step focuses on containerizing our Spring Boot application using Docker technology. Containerization simplifies deployment processes, ensures consistency across environments, and allows easy scaling of applications.
 
-## Test Coverage
-We've created test cases for the following core components of our application:
+---
 
-### Controllers
-- **NotificationControllerTest.java**
-- **TaskControllerTest.java**
-- **UserControllerTest.java**
+## Objectives
+- Create a Dockerfile to package the Spring Boot application into a lightweight container image.
+- Configure Docker Compose to manage both the application and its dependent database services simultaneously.
+- Validate the application's functionality within a containerized environment.
 
-These tests verify that our REST endpoints respond appropriately to different types of HTTP requests and return expected JSON responses with appropriate HTTP status codes.
+---
 
-### Services
-- **NotificationServiceImplTest.java**
-- **TaskServiceImplTest.java**
-- **UserServiceImplTest.java**
+## Technical Implementation
+Key points:
+- Uses slim OpenJDK 23 image for minimal footprint.
+- Sets working directory inside the container.
+- Copies built artifact (`taskmanager-0.0.1-SNAPSHOT.jar`) renamed to `app.jar`.
+- Exposes port 8080 for communication.
+- Defines entrypoint command to run the jar directly.
 
-The service layer tests validate the correctness of our business logic, including task management, notification handling, and user-related operations.
+---
 
-### Repositories
-- **InMemoryNotificationRepositoryTest.java**
-- **InMemoryTaskRepositoryTest.java**
-- **InMemoryUserRepositoryTest.java**
+
+Configuration highlights:
+- Builds image from current directory context.
+- Names container explicitly for clarity.
+- Configures Spring profile activation and datasource settings.
+- Maps host port 8080 to container internal port 8080.
+
+---
+
+## Usage Instructions
+
+### Building Image
+Run the following command at project root level:
+```bash
+docker compose build
+```
+
+### Starting Application
+Start the application along with its database dependency:
+```bash
+docker compose up
+```
+
+### Stopping Application
+Gracefully stop all related containers:
+```bash
+docker compose down
+```
+
