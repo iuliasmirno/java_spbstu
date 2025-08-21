@@ -1,5 +1,6 @@
 package ru.spbstu.taskmanager.service.impl;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ru.spbstu.taskmanager.model.User;
 import ru.spbstu.taskmanager.repository.UserRepository;
@@ -8,6 +9,7 @@ import ru.spbstu.taskmanager.service.UserService;
 import java.util.List;
 
 @Service
+@Profile({"inmemory", "jpa"})
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
@@ -20,7 +22,9 @@ public class UserServiceImpl implements UserService {
         if (repository.findByUsername(username) != null) {
             throw new IllegalArgumentException("Username already exists");
         }
-        return repository.save(new User(username));
+        User user = new User();
+        user.setUsername(username);
+        return repository.save(user);
     }
 
     @Override
