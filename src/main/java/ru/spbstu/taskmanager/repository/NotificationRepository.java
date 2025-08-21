@@ -8,4 +8,6 @@ public interface NotificationRepository {
     Notification save(Notification notification);
     List<Notification> findAllByUser(String userId);
     List<Notification> findPendingByUser(String userId);
+
+    boolean removeAll();
 }

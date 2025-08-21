@@ -35,4 +35,10 @@ public class InMemoryTaskRepository implements TaskRepository {
         }
         return false;
     }
+
+    @Override
+    public boolean removeAll() {
+        storage.clear();
+        return true;
+    }
 }

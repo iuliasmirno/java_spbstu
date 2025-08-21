@@ -31,4 +31,9 @@ public class NotificationServiceImpl implements NotificationService {
         pending.forEach(n -> n.setRead(true));
         return pending;
     }
+
+    @Override
+    public void deleteAllNotifications() {
+        repository.removeAll();
+    }
 }
