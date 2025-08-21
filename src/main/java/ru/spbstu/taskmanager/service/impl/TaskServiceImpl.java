@@ -46,7 +46,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public boolean deleteTask(String userId, String id) {
-        return repository.markDeleted(userId, id);
+        repository.markDeleted(userId, id);
+        return true;
     }
 
     @Override

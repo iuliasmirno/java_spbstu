@@ -35,8 +35,7 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean removeAll() {
+    public void removeAll() {
         storage.clear();
-        return true;
     }
 }

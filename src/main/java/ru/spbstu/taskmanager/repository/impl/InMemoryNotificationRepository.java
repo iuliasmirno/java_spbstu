@@ -46,8 +46,7 @@ public class InMemoryNotificationRepository implements NotificationRepository {
     }
 
     @Override
-    public boolean removeAll() {
+    public void removeAll() {
         storage.clear();
-        return true;
     }
 }

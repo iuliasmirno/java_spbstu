@@ -10,5 +10,5 @@ public interface NotificationRepository {
     List<Notification> findAllByUserId(String userId);
     List<Notification> findPendingByUser(String userId);
 
-    boolean removeAll();
+    void removeAll();
 }

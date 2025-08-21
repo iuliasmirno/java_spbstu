@@ -9,5 +9,5 @@ public interface UserRepository {
     User findByUsername(String username);
     List<User> findAll();
 
-    boolean removeAll();
+    void removeAll();
 }

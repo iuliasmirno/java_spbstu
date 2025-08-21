@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.TaskRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,18 +28,15 @@ public class InMemoryTaskRepository implements TaskRepository {
     }
 
     @Override
-    public boolean markDeleted(String userId, String id) {
+    public void markDeleted(String userId, String id) {
         Task task = storage.get(id);
         if (task != null && task.getUserId().equals(userId)) {
             task.setDeleted(true);
-            return true;
         }
-        return false;
     }
 
     @Override
-    public boolean removeAll() {
+    public void removeAll() {
         storage.clear();
-        return true;
     }
 }
