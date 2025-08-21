@@ -1,12 +1,20 @@
 package ru.spbstu.taskmanager.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Entity
+@Table(name = "tasks")
 public class Task {
-    private final String id;
-    private final String userId;
-    private final LocalDate creationDate;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    private String userId;
+    private LocalDate creationDate;
     private String title;
     private boolean completed;
     private boolean deleted;
@@ -22,10 +30,15 @@ public class Task {
         this.targetDate = targetDate;
     }
 
+    public Task() {
+
+    }
+
     public String getId() { return id; }
     public String getUserId() { return userId; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
+    public void setUserId(String userId) { this.userId = userId; }
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
     public boolean isDeleted() { return deleted; }
@@ -33,4 +46,5 @@ public class Task {
     public LocalDate getCreationDate() { return creationDate; }
     public LocalDate getTargetDate() { return targetDate; }
     public void setTargetDate(LocalDate targetDate) { this.targetDate = targetDate; }
+    public void setCreationDate(LocalDate creationDate) { this.creationDate = creationDate; }
 }
