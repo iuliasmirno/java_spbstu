@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface TaskRepository {
     Task save(Task task);
-    List<Task> findAllByUser(String userId);
+    List<Task> findByUserId(String userId);
     boolean markDeleted(String userId, String id);
 }
