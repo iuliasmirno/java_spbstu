@@ -10,12 +10,12 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
     @Column(unique = true, nullable = false)
     private String username;
 
     public User(String username) {
-        this.id = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID();
         this.username = username;
     }
 
@@ -23,7 +23,7 @@ public class User {
 
     }
 
-    public String getId() { return id; }
+    public UUID getId() { return id; }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 }

@@ -1,14 +1,32 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:17
+    container_name: taskmanager-db
+    restart: always
+    environment:
+      POSTGRES_DB: taskdb
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   app:
     build: .
     container_name: taskmanager-app
+    depends_on:
+      - db
     environment:
       SPRING_PROFILES_ACTIVE: jpa
-      SPRING_DATASOURCE_URL: jdbc:h2:mem:taskdb;DB_CLOSE_DELAY=-1
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskdb
       SPRING_DATASOURCE_USERNAME: testuser
       SPRING_DATASOURCE_PASSWORD: testpass
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
     ports:
       - "8080:8080"
+
+volumes:
+  postgres_data:

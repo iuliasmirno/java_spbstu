@@ -44,7 +44,7 @@ public class TaskController {
                                            @RequestBody CreateTaskRequest request) {
         Task task = service.createTask(userId, request.title(), request.targetDate());
         notificationService.createNotification(userId, "New task created: " + request.title());
-        return ResponseEntity.created(URI.create(task.getId())).body(task);
+        return ResponseEntity.created(URI.create(task.getId().toString())).body(task);
     }
 
     @DeleteMapping("/{id}")

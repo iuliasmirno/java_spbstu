@@ -11,7 +11,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private String userId;
     private LocalDate creationDate;
@@ -21,7 +21,7 @@ public class Task {
     private LocalDate targetDate;
 
     public Task(String userId, String title, LocalDate targetDate) {
-        this.id = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID();
         this.userId = userId;
         this.title = title;
         this.completed = false;
@@ -34,7 +34,7 @@ public class Task {
 
     }
 
-    public String getId() { return id; }
+    public UUID getId() { return id; }
     public String getUserId() { return userId; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

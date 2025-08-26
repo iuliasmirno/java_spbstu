@@ -47,7 +47,7 @@ class InMemoryTaskRepositoryTest {
         Task task = new Task("user1", "Task", LocalDate.now());
         repository.save(task);
 
-        repository.markDeleted("user1", task.getId());
+        repository.markDeleted("user1", task.getId().toString());
 
         assertTrue(task.isDeleted());
     }
@@ -57,7 +57,7 @@ class InMemoryTaskRepositoryTest {
         Task task = new Task("user1", "Task", LocalDate.now());
         repository.save(task);
 
-        repository.markDeleted("user2", task.getId());
+        repository.markDeleted("user2", task.getId().toString());
 
         assertFalse(task.isDeleted());
     }

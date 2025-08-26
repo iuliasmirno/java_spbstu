@@ -17,14 +17,14 @@ public class InMemoryNotificationRepository implements NotificationRepository {
 
     @Override
     public Notification save(Notification notification) {
-        storage.put(notification.getId(), notification);
+        storage.put(notification.getId().toString(), notification);
         return notification;
     }
 
     @Override
     public <S extends Notification> Iterable<S> saveAll(Iterable<S> entities) {
         for (S entity : entities) {
-            storage.put(entity.getId(), entity);
+            storage.put(entity.getId().toString(), entity);
         }
         return entities;
     }
