@@ -17,7 +17,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public User save(User user) {
-        storage.put(user.getId(), user);
+        storage.put(user.getId().toString(), user);
         return user;
     }
 

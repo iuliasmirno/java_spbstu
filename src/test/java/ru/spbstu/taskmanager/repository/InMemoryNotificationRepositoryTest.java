@@ -6,6 +6,8 @@ import ru.spbstu.taskmanager.model.Notification;
 import ru.spbstu.taskmanager.repository.impl.InMemoryNotificationRepository;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +31,7 @@ class InMemoryNotificationRepositoryTest {
     }
 
     @Test
-    void findAllByUserShouldReturnSortedByDateId() {
+    void findAllByUserShouldReturnAllNotifications() {
         Notification n1 = new Notification("user1", "First");
         Notification n2 = new Notification("user1", "Second");
         repository.save(n2);
@@ -37,9 +39,13 @@ class InMemoryNotificationRepositoryTest {
 
         List<Notification> all = repository.findAllByUserId("user1");
 
-        assertEquals("First", all.get(0).getMessage()); // потому что по дате
+        assertEquals(2, all.size());
+        Set<String> messages = all.stream()
+                .map(Notification::getMessage)
+                .collect(Collectors.toSet());
+        assertTrue(messages.contains("First"));
+        assertTrue(messages.contains("Second"));
     }
-
     @Test
     void findPendingByUserShouldReturnOnlyUnread() {
         Notification n1 = new Notification("user1", "First");

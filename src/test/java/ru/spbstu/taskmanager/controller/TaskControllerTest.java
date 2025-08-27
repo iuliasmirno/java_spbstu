@@ -3,6 +3,9 @@ package ru.spbstu.taskmanager.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,76 +23,91 @@ import ru.spbstu.taskmanager.service.TaskService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(TaskController.class)
 class TaskControllerTest {
 
+    private static final Logger log = LoggerFactory.getLogger(TaskControllerTest.class);
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
 
-    @Autowired
+    @MockitoBean
     private TaskService taskService;
 
-    @BeforeEach
-    void setup() {
-        taskService.removeAllTasks();
+    @MockitoBean
+    private NotificationService notificationService;
+
+    @Test
+    void getAllTasksShouldReturnTasks() throws Exception {
+        Task task = new Task("user1", "Test Task", LocalDate.now());
+//        task.setId(1L);
+
+        Mockito.when(taskService.getAllTasks("user1"))
+                .thenReturn(List.of(task));
+
+        mockMvc.perform(get("/users/user1/tasks"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Test Task"))
+                .andExpect(jsonPath("$[0].userId").value("user1"));
     }
 
     @Test
-    void getAllTasksShouldReturnTasks() {
-        Task task = taskService.createTask("user1", "Test Task", LocalDate.now());
+    void getPendingTasksShouldReturnTasks() throws Exception {
+        Task task = new Task("user1", "Pending Task", LocalDate.now().plusDays(1));
+//        task.setId(2L);
 
-        ResponseEntity<Task[]> response = restTemplate.getForEntity("/users/user1/tasks", Task[].class);
+        Mockito.when(taskService.getPendingTasks("user1"))
+                .thenReturn(List.of(task));
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().length);
-        assertEquals("Test Task", response.getBody()[0].getTitle());
+        mockMvc.perform(get("/users/user1/tasks/pending"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Pending Task"));
     }
 
     @Test
-    void getPendingTasksShouldReturnTasks() {
-        Task task = taskService.createTask("user1", "Pending Task", LocalDate.now().plusDays(1));
+    void createTaskShouldReturnCreated() throws Exception {
+        Task testTask = new Task();
+        testTask.setUserId("user1");
+        testTask.setTitle("New Task");
+        testTask.setTargetDate(LocalDate.now().plusDays(1));
+        testTask.setId(UUID.randomUUID());
 
-        ResponseEntity<Task[]> response = restTemplate.getForEntity("/users/user1/tasks/pending", Task[].class);
+        Mockito.when(taskService.createTask(eq("user1"), eq("New Task"), any(LocalDate.class)))
+                .thenReturn(testTask);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().length);
-        assertEquals("Pending Task", response.getBody()[0].getTitle());
+        String requestJson = """
+            {
+              "title": "New Task",
+              "targetDate": "%s"
+            }
+            """.formatted(LocalDate.now().plusDays(1));
+
+        mockMvc.perform(post("/users/user1/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("New Task"))
+                .andExpect(jsonPath("$.userId").value("user1"));
     }
 
-    @Test
-    void createTaskShouldReturnCreated() {
-        CreateTaskRequest request = new CreateTaskRequest("New Task", LocalDate.now().plusDays(1));
-
-        ResponseEntity<Task> response = restTemplate.postForEntity("/users/user1/tasks", request, Task.class);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("New Task", response.getBody().getTitle());
-    }
 
     @Test
-    void deleteTaskShouldReturnNoContent() {
-        Task task = taskService.createTask("user1", "To Delete", LocalDate.now());
+    void deleteTaskShouldReturnNoContent() throws Exception {
+        UUID taskId = UUID.randomUUID();
 
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "/users/user1/tasks/" + task.getId(),
-                HttpMethod.DELETE,
-                null,
-                Void.class
-        );
+        when(taskService.deleteTask("user1", taskId)).thenReturn(true);
 
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        mockMvc.perform(delete("/users/user1/tasks/" + taskId))
+                .andExpect(status().isNoContent());
     }
 }
 

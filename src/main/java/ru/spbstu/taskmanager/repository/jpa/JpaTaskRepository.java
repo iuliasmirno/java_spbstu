@@ -11,6 +11,7 @@ import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.TaskRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 @Profile("jpa")
@@ -20,7 +21,7 @@ public interface JpaTaskRepository extends TaskRepository, JpaRepository<Task, S
     @Transactional
     @Modifying
     @Query("update Task t set t.deleted = true where t.userId = :userId and t.id = :id")
-    void markDeleted(@Param("userId") String userId, @Param("id") String id);
+    void markDeleted(@Param("userId") String userId, @Param("id") UUID id);
 
     @Override
     @Modifying

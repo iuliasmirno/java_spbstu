@@ -1,53 +1,21 @@
-# Step 4: Add Docker Support
+# Step 5: Migration to PostgreSQL Database
 
 ## Overview
-This step focuses on containerizing our Spring Boot application using Docker technology. Containerization simplifies deployment processes, ensures consistency across environments, and allows easy scaling of applications.
+This step represents a significant architectural improvement by migrating our application from the embedded H2 database to the robust PostgreSQL relational database management system. PostgreSQL provides better performance, scalability, and enterprise-level features compared to the in-memory H2 solution previously used.
 
 ---
 
-## Objectives
-- Create a Dockerfile to package the Spring Boot application into a lightweight container image.
-- Configure Docker Compose to manage both the application and its dependent database services simultaneously.
-- Validate the application's functionality within a containerized environment.
+## Key Changes Implemented
 
----
+### 1. Replaced H2 with PostgreSQL
+The application has been updated to use PostgreSQL as its primary database engine. This change enhances data persistence, transactional integrity, and supports larger-scale deployments.
 
-## Technical Implementation
-Key points:
-- Uses slim OpenJDK 23 image for minimal footprint.
-- Sets working directory inside the container.
-- Copies built artifact (`taskmanager-0.0.1-SNAPSHOT.jar`) renamed to `app.jar`.
-- Exposes port 8080 for communication.
-- Defines entrypoint command to run the jar directly.
+### 2. Updated `application.properties`
+The configuration properties were modified to establish connections to the PostgreSQL database instance. New parameters include:
+- Connection URL
+- Username
+- Password
+- Driver class name
 
----
-
-
-Configuration highlights:
-- Builds image from current directory context.
-- Names container explicitly for clarity.
-- Configures Spring profile activation and datasource settings.
-- Maps host port 8080 to container internal port 8080.
-
----
-
-## Usage Instructions
-
-### Building Image
-Run the following command at project root level:
-```bash
-docker compose build
-```
-
-### Starting Application
-Start the application along with its database dependency:
-```bash
-docker compose up
-```
-
-### Stopping Application
-Gracefully stop all related containers:
-```bash
-docker compose down
-```
-
+### 3. Integrated Flyway for Database Migrations
+Flyway was incorporated to manage schema versions and apply incremental changes automatically upon application startup. This ensures smooth upgrades and rollbacks of database structures.

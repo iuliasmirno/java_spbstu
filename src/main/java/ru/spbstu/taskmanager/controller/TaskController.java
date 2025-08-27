@@ -9,6 +9,7 @@ import ru.spbstu.taskmanager.service.TaskService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users/{userId}/tasks")
@@ -44,11 +45,11 @@ public class TaskController {
                                            @RequestBody CreateTaskRequest request) {
         Task task = service.createTask(userId, request.title(), request.targetDate());
         notificationService.createNotification(userId, "New task created: " + request.title());
-        return ResponseEntity.created(URI.create(task.getId())).body(task);
+        return ResponseEntity.created(URI.create(task.getId().toString())).body(task);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable String userId, @PathVariable String id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable String userId, @PathVariable UUID id) {
         if (!service.deleteTask(userId, id)) {
             return ResponseEntity.notFound().build();
         }

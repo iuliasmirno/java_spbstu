@@ -11,7 +11,7 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private String userId;
     private String message;
@@ -19,7 +19,7 @@ public class Notification {
     private boolean read;
 
     public Notification(String userId, String message) {
-        this.id = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID();
         this.userId = userId;
         this.message = message;
         this.creationDate = LocalDateTime.now();
@@ -30,11 +30,12 @@ public class Notification {
 
     }
 
-    public String getId() { return id; }
+    public UUID getId() { return id; }
     public String getUserId() { return userId; }
     public String getMessage() { return message; }
     public LocalDateTime getCreationDate() { return creationDate; }
     public boolean isRead() { return read; }
+    public void setId(UUID id) { this.id = id; }
     public void setRead(boolean read) { this.read = read; }
     public void setUserId(String userId) { this.userId = userId; }
     public void setMessage(String message) { this.message = message; }
