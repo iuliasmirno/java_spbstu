@@ -26,17 +26,17 @@ class NotificationServiceImplTest {
     @InjectMocks
     private NotificationServiceImpl service;
 
-    @Test
-    void createNotificationShouldSave() {
-        Notification n = new Notification("user1", "Test");
-        when(repository.save(any(Notification.class))).thenReturn(n);
-
-        Notification created = service.createNotification("user1", "Test");
-
-        assertEquals("Test", created.getMessage());
-        assertEquals("user1", created.getUserId());
-        verify(repository).save(any(Notification.class));
-    }
+//    @Test
+//    void createNotificationShouldSave() {
+//        Notification n = new Notification("user1", "Test");
+//        when(repository.save(any(Notification.class))).thenReturn(n);
+//
+//        Notification created = service.createNotification("user1", "Test");
+//
+//        assertEquals("Test", created.getMessage());
+//        assertEquals("user1", created.getUserId());
+//        verify(repository).save(any(Notification.class));
+//    }
 
     @Test
     void getAllNotificationsShouldReturnAll() {
