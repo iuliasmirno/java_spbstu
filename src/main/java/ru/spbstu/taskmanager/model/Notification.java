@@ -35,6 +35,7 @@ public class Notification {
     public String getMessage() { return message; }
     public LocalDateTime getCreationDate() { return creationDate; }
     public boolean isRead() { return read; }
+    public void setId(UUID id) { this.id = id; }
     public void setRead(boolean read) { this.read = read; }
     public void setUserId(String userId) { this.userId = userId; }
     public void setMessage(String message) { this.message = message; }

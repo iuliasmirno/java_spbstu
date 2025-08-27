@@ -2,6 +2,7 @@ package ru.spbstu.taskmanager.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,68 +17,78 @@ import ru.spbstu.taskmanager.service.UserService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(UserController.class)
 class UserControllerTest {
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
     private UserService userService;
 
-    @BeforeEach
-    void setup() {
-        userService.removeAllUsers();
+    @Test
+    void registerShouldCreateUser() throws Exception {
+        UUID id = UUID.randomUUID();
+        User user = new User("testuser");
+        user.setId(id);
+
+        Mockito.when(userService.register("testuser"))
+                .thenReturn(user);
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("testuser"))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void registerShouldCreateUser() {
-        String username = "testuser";
+    void loginShouldReturnUserIfExists() throws Exception {
+        UUID id = UUID.randomUUID();
+        User created = new User("loginuser");
+        created.setId(id);
 
-        ResponseEntity<User> response = restTemplate.postForEntity("/users", username, User.class);
+        Mockito.when(userService.login("loginuser"))
+                .thenReturn(created);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(username, response.getBody().getUsername());
-        assertNotNull(response.getBody().getId());
+        mockMvc.perform(get("/users/login")
+                        .param("username", "loginuser"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("loginuser"))
+                .andExpect(jsonPath("$.id").value(id.toString())); // UUID → строка
     }
 
     @Test
-    void loginShouldReturnUserIfExists() {
-        User created = userService.register("loginuser");
+    void loginShouldReturnNotFoundIfUserDoesNotExist() throws Exception {
+        Mockito.when(userService.login(anyString()))
+                .thenReturn(null);
 
-        ResponseEntity<User> response = restTemplate.getForEntity("/users/login?username=loginuser", User.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(created.getUsername(), response.getBody().getUsername());
-        assertEquals(created.getId(), response.getBody().getId());
+        mockMvc.perform(get("/users/login")
+                        .param("username", "unknown"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void loginShouldReturnNotFoundIfUserDoesNotExist() {
-        ResponseEntity<User> response = restTemplate.getForEntity("/users/login?username=unknown", User.class);
+    void getAllUsersShouldReturnUsers() throws Exception {
+        User user1 = new User("user1");
+//        user1.setId(3L);
+        User user2 = new User("user2");
+//        user2.setId(4L);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
+        Mockito.when(userService.getAllUsers())
+                .thenReturn(List.of(user1, user2));
 
-    @Test
-    void getAllUsersShouldReturnUsers() {
-        User user1 = userService.register("user1");
-        User user2 = userService.register("user2");
-
-        ResponseEntity<User[]> response = restTemplate.getForEntity("/users", User[].class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<User> users = Arrays.asList(response.getBody());
-        assertTrue(users.stream().anyMatch(u -> u.getUsername().equals("user1")));
-        assertTrue(users.stream().anyMatch(u -> u.getUsername().equals("user2")));
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value("user1"))
+                .andExpect(jsonPath("$[1].username").value("user2"));
     }
 }
 

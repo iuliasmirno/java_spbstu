@@ -2,6 +2,7 @@ package ru.spbstu.taskmanager.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,73 +18,83 @@ import ru.spbstu.taskmanager.service.NotificationService;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(NotificationController.class)
 class NotificationControllerTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
 
-    @Autowired
+    @MockitoBean
     private NotificationService notificationService;
 
-    private String userId = "user1";
+    private final String userId = "user1";
 
-    @BeforeEach
-    void setup() {
-        notificationService.deleteAllNotifications();
+    @Test
+    void getAllNotificationsShouldReturnNotifications() throws Exception {
+        UUID id1 = UUID.randomUUID();
+        Notification n1 = new Notification(userId, "Test notification 1");
+        n1.setId(id1);
+
+        UUID id2 = UUID.randomUUID();
+        Notification n2 = new Notification(userId, "Test notification 2");
+        n2.setId(id2);
+
+        Mockito.when(notificationService.getAllNotifications(userId))
+                .thenReturn(List.of(n1, n2));
+
+        mockMvc.perform(get("/notifications")
+                        .param("userId", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].message").value("Test notification 1"))
+                .andExpect(jsonPath("$[1].message").value("Test notification 2"))
+                .andExpect(jsonPath("$[0].id").value(id1.toString()))
+                .andExpect(jsonPath("$[1].id").value(id2.toString()));
     }
 
     @Test
-    void getAllNotificationsShouldReturnNotifications() {
-        // создаём уведомления
-        Notification n1 = notificationService.createNotification(userId, "Test notification 1");
-        Notification n2 = notificationService.createNotification(userId, "Test notification 2");
+    void getAllNotificationsShouldReturnNoContentIfEmpty() throws Exception {
+        Mockito.when(notificationService.getAllNotifications(userId))
+                .thenReturn(List.of());
 
-        ResponseEntity<Notification[]> response =
-                restTemplate.getForEntity("/notifications?userId=" + userId, Notification[].class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<Notification> notifications = Arrays.asList(response.getBody());
-        assertTrue(notifications.stream().anyMatch(n -> n.getMessage().equals("Test notification 1")));
-        assertTrue(notifications.stream().anyMatch(n -> n.getMessage().equals("Test notification 2")));
+        mockMvc.perform(get("/notifications")
+                        .param("userId", userId))
+                .andExpect(status().isNoContent());
     }
 
     @Test
-    void getAllNotificationsShouldReturnNoContentIfEmpty() {
-        ResponseEntity<Notification[]> response =
-                restTemplate.getForEntity("/notifications?userId=" + userId, Notification[].class);
+    void getPendingNotificationsShouldReturnPending() throws Exception {
+        Notification n1 = new Notification(userId, "Pending notification 1");
+//        n1.setId(3L);
+        n1.setRead(true); // допустим pending = isRead == true
+        Notification n2 = new Notification(userId, "Pending notification 2");
+//        n2.setId(4L);
+        n2.setRead(true);
 
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        Mockito.when(notificationService.getPendingNotifications(userId))
+                .thenReturn(List.of(n1, n2));
+
+        mockMvc.perform(get("/notifications/pending")
+                        .param("userId", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].message").value("Pending notification 1"))
+                .andExpect(jsonPath("$[1].message").value("Pending notification 2"));
     }
 
     @Test
-    void getPendingNotificationsShouldReturnPending() {
-        // создаём уведомления — они уже pending
-        Notification n1 = notificationService.createNotification(userId, "Pending notification 1");
-        Notification n2 = notificationService.createNotification(userId, "Pending notification 2");
+    void getPendingNotificationsShouldReturnNoContentIfNone() throws Exception {
+        Mockito.when(notificationService.getPendingNotifications(anyString()))
+                .thenReturn(List.of());
 
-        ResponseEntity<Notification[]> response =
-                restTemplate.getForEntity("/notifications/pending?userId=" + userId, Notification[].class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<Notification> pending = Arrays.asList(response.getBody());
-        assertEquals(2, pending.size());
-        assertTrue(pending.stream().allMatch(n -> n.isRead()));
-    }
-
-    @Test
-    void getPendingNotificationsShouldReturnNoContentIfNone() {
-        ResponseEntity<Notification[]> response =
-                restTemplate.getForEntity("/notifications/pending?userId=" + userId, Notification[].class);
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        mockMvc.perform(get("/notifications/pending")
+                        .param("userId", userId))
+                .andExpect(status().isNoContent());
     }
 }

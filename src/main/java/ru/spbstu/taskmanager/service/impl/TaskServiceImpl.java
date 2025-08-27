@@ -8,6 +8,7 @@ import ru.spbstu.taskmanager.service.TaskService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Profile({"inmemory", "jpa"})
@@ -45,7 +46,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public boolean deleteTask(String userId, String id) {
+    public boolean deleteTask(String userId, UUID id) {
         repository.markDeleted(userId, id);
         return true;
     }

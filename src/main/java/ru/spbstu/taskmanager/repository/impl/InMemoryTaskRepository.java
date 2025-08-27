@@ -7,16 +7,17 @@ import ru.spbstu.taskmanager.repository.TaskRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @Profile("inmemory")
 public class InMemoryTaskRepository implements TaskRepository {
-    private final Map<String, Task> storage = new ConcurrentHashMap<>();
+    private final Map<UUID, Task> storage = new ConcurrentHashMap<>();
 
     @Override
     public Task save(Task task) {
-        storage.put(task.getId().toString(), task);
+        storage.put(task.getId(), task);
         return task;
     }
 
@@ -28,7 +29,7 @@ public class InMemoryTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void markDeleted(String userId, String id) {
+    public void markDeleted(String userId, UUID id) {
         Task task = storage.get(id);
         if (task != null && task.getUserId().equals(userId)) {
             task.setDeleted(true);

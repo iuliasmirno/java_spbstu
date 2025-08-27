@@ -20,6 +20,10 @@ public class Task {
     private boolean deleted;
     private LocalDate targetDate;
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public Task(String userId, String title, LocalDate targetDate) {
         this.id = UUID.randomUUID();
         this.userId = userId;
