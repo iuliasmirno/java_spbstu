@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.TaskRepository;
 import ru.spbstu.taskmanager.service.impl.TaskServiceImpl;
@@ -24,6 +25,9 @@ public class TaskServiceImplTest {
 
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
 
     @InjectMocks
     private TaskServiceImpl service;

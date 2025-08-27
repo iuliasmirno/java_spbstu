@@ -1,5 +1,7 @@
 package ru.spbstu.taskmanager.service.impl;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
@@ -16,9 +18,17 @@ import java.util.UUID;
 @Profile({"inmemory", "jpa"})
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository repository;
+    private final RabbitTemplate rabbitTemplate;
 
-    public TaskServiceImpl(TaskRepository repository) {
+    @Value("${task.exchange}")
+    private String exchange;
+
+    @Value("${task.routing-key}")
+    private String routingKey;
+
+    public TaskServiceImpl(TaskRepository repository, RabbitTemplate rabbitTemplate) {
         this.repository = repository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -33,6 +43,8 @@ public class TaskServiceImpl implements TaskService {
         Task savedTask = repository.save(task);
 
         evictCache(userId);
+
+        rabbitTemplate.convertAndSend(exchange, routingKey, savedTask);
 
         return savedTask;
     }

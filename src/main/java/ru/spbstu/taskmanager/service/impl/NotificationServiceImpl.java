@@ -1,8 +1,10 @@
 package ru.spbstu.taskmanager.service.impl;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ru.spbstu.taskmanager.model.Notification;
+import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.NotificationRepository;
 import ru.spbstu.taskmanager.service.NotificationService;
 
@@ -18,11 +20,11 @@ public class NotificationServiceImpl implements NotificationService {
         this.repository = repository;
     }
 
-    @Override
-    public Notification createNotification(String userId, String message) {
+    @RabbitListener(queues = "${task.queue}")
+    public Notification handleTaskCreated(Task task) {
         Notification notification = new Notification();
-        notification.setUserId(userId);
-        notification.setMessage(message);
+        notification.setUserId(task.getUserId());
+        notification.setMessage("New task created: " + task.getTitle());
         notification.setCreationDate(LocalDateTime.now());
         notification.setRead(false);
         return repository.save(notification);
