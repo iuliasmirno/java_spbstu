@@ -1,5 +1,7 @@
 package ru.spbstu.taskmanager.service.impl;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ru.spbstu.taskmanager.model.Task;
@@ -28,10 +30,15 @@ public class TaskServiceImpl implements TaskService {
         task.setCreationDate(LocalDate.now());
         task.setDeleted(false);
         task.setCompleted(false);
-        return repository.save(task);
+        Task savedTask = repository.save(task);
+
+        evictCache(userId);
+
+        return savedTask;
     }
 
     @Override
+    @Cacheable(value = "tasks", key = "#userId")
     public List<Task> getAllTasks(String userId) {
         return repository.findByUserId(userId).stream()
                 .filter(t -> !t.isDeleted())
@@ -39,6 +46,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Cacheable(value = "pendingTasks", key = "#userId")
     public List<Task> getPendingTasks(String userId) {
         return repository.findByUserId(userId).stream()
                 .filter(t -> !t.isDeleted() && !t.isCompleted())
@@ -48,11 +56,19 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean deleteTask(String userId, UUID id) {
         repository.markDeleted(userId, id);
+
+        evictCache(userId);
+
         return true;
     }
 
     @Override
     public void removeAllTasks() {
         repository.removeAll();
+    }
+
+    @CacheEvict(value = {"tasks", "pendingTasks"}, key = "#userId")
+    public void evictCache(String userId) {
+        // Метод для ручного удаления кэша
     }
 }
