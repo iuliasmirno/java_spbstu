@@ -28,5 +28,12 @@ services:
     ports:
       - "8080:8080"
 
+  redis:
+    image: redis:8
+    container_name: taskmanager-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
 volumes:
   postgres_data:
