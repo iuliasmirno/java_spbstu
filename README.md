@@ -1,20 +1,13 @@
-# Step 6: Implement Caching (Redis)
+# Step 8: Add Scheduling & Async Tasks
 
 ## Overview
-This step involved introducing caching functionality into the application using Redis as the caching provider alongside Spring Cache abstraction. The purpose was to enhance performance by minimizing frequent database accesses and serving repeated requests faster.
+This step implements scheduled and asynchronous task execution using Spring's `@Scheduled` and `@Async` annotations.
 
----
+## Functionality
+- Periodically scans tasks to identify those past their due dates.
+- Executes long-running or non-critical operations in background threads without blocking the main application flow.
 
-
-## Functional Description
-The caching mechanism operates on a straightforward principle:
-1. When a request arrives seeking certain data (such as list of tasks):
-    - First, the application searches for the requested item in Redis cache.
-    - If found, it returns the cached result instantly.
-    - If missing, it retrieves the data from the underlying PostgreSQL database, stores it in Redis with predefined timeout, and finally delivers it back to the caller.
-
-2. Cached entries expire automatically after reaching their designated lifespan (defined in `application.properties`), ensuring that outdated information does not persist indefinitely.
-
----
-
-This concludes the detailed summary of modifications made during Step 6 regarding Redis caching implementation.
+## Technical Details
+- Scheduled tasks run at configurable intervals defined in the application properties.
+- Asynchronous methods utilize Spring's thread pool executor for concurrent processing.
+- Repository methods were adapted to provide necessary data for scheduled checks.
