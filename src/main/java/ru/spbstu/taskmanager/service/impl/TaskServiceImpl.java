@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.spbstu.taskmanager.model.Task;
 import ru.spbstu.taskmanager.repository.TaskRepository;
@@ -82,5 +84,29 @@ public class TaskServiceImpl implements TaskService {
     @CacheEvict(value = {"tasks", "pendingTasks"}, key = "#userId")
     public void evictCache(String userId) {
         // Метод для ручного удаления кэша
+    }
+
+    // каждые 60 сек
+    @Scheduled(fixedRate = 60000)
+    @Async
+    public void checkOverdueTasks() {
+        LocalDate today = LocalDate.now();
+
+        List<Task> overdueTasks = repository.findAll().stream()
+                .filter(t -> !t.isDeleted() && !t.isCompleted() && t.getTargetDate().isBefore(today))
+                .toList();
+
+        overdueTasks.forEach(task -> {
+            Task message = new Task();
+            message.setId(task.getId());
+            message.setUserId(task.getUserId());
+            message.setTitle("[OVERDUE] " + task.getTitle());
+            message.setTargetDate(task.getTargetDate());
+            message.setCreationDate(task.getCreationDate());
+            message.setCompleted(task.isCompleted());
+            message.setDeleted(task.isDeleted());
+
+            rabbitTemplate.convertAndSend(exchange, routingKey, message);
+        });
     }
 }

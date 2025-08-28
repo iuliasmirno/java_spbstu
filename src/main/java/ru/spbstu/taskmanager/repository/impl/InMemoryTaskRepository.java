@@ -40,4 +40,9 @@ public class InMemoryTaskRepository implements TaskRepository {
     public void removeAll() {
         storage.clear();
     }
+
+    @Override
+    public List<Task> findAll() {
+        return storage.values().stream().toList();
+    }
 }
